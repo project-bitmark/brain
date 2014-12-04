@@ -9,7 +9,8 @@
     var timeout = null;
 
     var PUBLIC_KEY_VERSION = 85;
-    var PRIVATE_KEY_VERSION = 73;
+    var PRIVATE_KEY_VERSION = 213;
+    var OLD_PRIVATE_KEY_VERSION = 73;
     var ADDRESS_URL_PREFIX = 'http://bitmark.co:3000'
 
     function parseBase58Check(address) {
@@ -153,6 +154,7 @@
         $('#pass').attr('readonly', gen_from != 'pass');
         $('#hash').attr('readonly', gen_from != 'hash');
         $('#sec').attr('readonly', gen_from != 'sec');
+        $('#seco').attr('readonly', gen_from != 'seco');
         $('#sec').parent().parent().removeClass('error');
     }
 
@@ -169,6 +171,8 @@
             $('#hash').focus();
         } else if (gen_from == 'sec') {
             $('#sec').focus();
+        } else if (gen_from == 'seco') {
+            $('#seco').focus();
         }
     }
 
@@ -239,6 +243,10 @@
         var sec = new Bitcoin.Address(payload);
         sec.version = PRIVATE_KEY_VERSION;
         $('#sec').val(sec);
+        
+        var seco = new Bitcoin.Address(payload);
+        seco.version = OLD_PRIVATE_KEY_VERSION;
+        $('#seco').val(seco);
 
         var pub = Crypto.util.bytesToHex(getEncoded(gen_pt, compressed));
         $('#pub').val(pub);
@@ -337,6 +345,51 @@
         timeout = setTimeout(generate, TIMEOUT);
     }
 
+    function genOnChangeOldPrivKey() {
+
+      clearTimeout(timeout);
+
+      $('#pass').val('');
+      gen_ps_reset = true;
+
+      var seco = $('#seco').val();
+
+      try { 
+          var res = parseBase58Check(seco); 
+          var version = res[0];
+          var payload = res[1];
+      } catch (err) {
+          setErrorState($('#seco'), true, 'Invalid private key checksum');
+          return;
+      };
+
+      if (version != OLD_PRIVATE_KEY_VERSION) {
+          setErrorState($('#seco'), true, 'Invalid private key version');
+          return;
+      } else if (payload.length < 32) {
+          setErrorState($('#seco'), true, 'Invalid payload (must be 32 or 33 bytes)');
+          return;
+      }
+
+      setErrorState($('#seco'), false);
+
+      if (payload.length > 32) {
+          payload.pop();
+          gen_compressed = true;
+      } else {
+          gen_compressed = false;
+      }
+
+      // toggle radio button without firing an event
+      $('#gen_comp label input').off();
+      $('#gen_comp label input[name='+(gen_compressed?'compressed':'uncompressed')+']').click();
+      $('#gen_comp label input').on('change', genOnChangeCompressed);
+
+      $('#hash').val(Crypto.util.bytesToHex(payload));
+
+      timeout = setTimeout(generate, TIMEOUT);
+  }
+    
     function genRandomPass() {
         // chosen by fair dice roll
         // guaranted to be random
@@ -366,7 +419,8 @@
         onInput('#pass', onChangePass);
         onInput('#hash', onChangeHash);
         onInput('#sec', genOnChangePrivKey);
-
+        onInput('#seco', genOnChangeOldPrivKey);
+        
         $('#genRandom').click(genRandom);
 
         $('#gen_from label input').on('change', update_gen_from );

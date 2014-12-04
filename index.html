@@ -28,7 +28,10 @@
                 <label class="col-lg-2 control-label" for="from_pass">Get Address From</label>
                 <div class="col-lg-10 controls">
                   <div class="btn-group" data-toggle="buttons" id="gen_from">
-                    <label class="btn btn-default active" title="Single SHA256"><input id="from_pass" name="gen_from" type="radio" />Passphrase</label> <label class="btn btn-default" title="Hex-encoded"><input id="from_hash" name="gen_from" type="radio" />Secret Exponent</label> <label class="btn btn-default" title="Base58-encoded"><input id="from_sec" name="gen_from" type="radio" />Private Key</label>
+                    <label class="btn btn-default active" title="Single SHA256"><input id="from_pass" name="gen_from" type="radio" />Passphrase</label>
+                    <label class="btn btn-default" title="Hex-encoded"><input id="from_hash" name="gen_from" type="radio" />Secret Exponent</label>
+                    <label class="btn btn-default" title="New Base58-encoded"><input id="from_sec" name="gen_from" type="radio" />Private Key</label>
+                    <label class="btn btn-default" title="Old Base58-encoded"><input id="from_seco" name="gen_from" type="radio" />Old Private Key (pre 0.9.3)</label>
                   </div>
                 </div>
               </div>
@@ -58,6 +61,12 @@
                 <label class="col-lg-2 control-label" for="sec">Private Key</label>
                 <div class="col-lg-10 controls">
                   <input class="form-control" id="sec" readonly="readonly" title="Wallet Import Format (Base58Check of Secret Exponent)" type="text" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 control-label" for="seco">Pre 0.9.3 Private Key</label>
+                <div class="col-lg-10 controls">
+                  <input class="form-control" id="seco" readonly="readonly" title="Pre 0.9.3 Wallet Import Format (Base58Check of Secret Exponent)" type="text" />
                 </div>
               </div>
               <div class="form-group">
